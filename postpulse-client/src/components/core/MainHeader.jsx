@@ -7,19 +7,10 @@ function MainHeader({ onCreatePost }) {
   return (
     <header className={classes.header}>
       <h1 className={classes.logo}>
-        <MdMessage />
-        React Poster
+        <MdMessage color="#a25032" />
+        Postpulse
       </h1>
-      <p>
-        <NavLink
-          className={classes.button}
-          to={"content/create-post"}
-          relative="path"
-        >
-          <MdPostAdd size={18} />
-          New Post
-        </NavLink>
-      </p>
+      <p></p>
     </header>
   );
 }

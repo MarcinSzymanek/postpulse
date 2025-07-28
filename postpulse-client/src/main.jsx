@@ -8,6 +8,7 @@ import { MainContent, loader as postsLoader } from "./routes/MainContent";
 import { NewPost, action as submitAction } from "./routes/NewPostRoutForm";
 import { PostDetails, loader as detailsLoader } from "./routes/PostDetails";
 import Spinner from "./components/core/Spinner";
+import { Homepage } from "./routes/Homepage";
 import { SignIn } from "./routes/SignIn";
 
 const router = createBrowserRouter([
@@ -17,10 +18,10 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <SignIn />,
+        element: <Homepage />,
       },
       {
-        path: "/content",
+        path: "/feed",
         element: <MainContent />,
         loader: postsLoader,
         HydrateFallback: Spinner,

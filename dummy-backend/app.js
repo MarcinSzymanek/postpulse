@@ -1,42 +1,46 @@
 require("dotenv").config();
 const express = require("express");
+const cors = require("cors");
 const bodyParser = require("body-parser");
-const jwt = require("jsonwebtoken");
+const helmet = require("helmet");
+const { validateAccessToken } = require("./middleware/auth0.middleware");
 
 const { getStoredPosts, storePosts } = require("./data/posts");
-const {
-  emailIsValid,
-  passwordIsValid,
-  checkEmailRegistered,
-  validateSignupData,
-} = require("./data/validation");
-
-const {
-  getUser,
-  getUsers,
-  storeUsers,
-  deleteUser,
-} = require("./data/userData");
 
 function delay(timeMs) {
   return new Promise((resolve, reject) => setTimeout(() => resolve(), timeMs));
 }
 
 const app = express();
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      useDefaults: false,
+      directives: {
+        "default-src": ["'none'"],
+        "frame-ancestors": ["'none'"],
+      },
+    },
+    frameguard: {
+      action: "deny",
+    },
+  })
+);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 
-app.use((req, res, next) => {
-  // Attach CORS headers
-  // Required when using a detached backend (that runs on a different domain)
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET,POST");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-  next();
-});
+app.use(
+  cors({
+    origin: CLIENT_ORIGIN_URL,
+    methods: ["GET", "POST", "UPDATE"],
+    allowedHeaders: ["Authorization", "Content-Type"],
+    maxAge: 86400,
+  })
+);
 
 app.use((req, res, next) => {
   console.log("Received request %s from %s : %s", req.method, req.host, req.ip);
+  res.contentType("application/json; charset=utf-8");
   next();
 });
 
@@ -67,69 +71,6 @@ app.post("/posts", async (req, res) => {
   const updatedPosts = [newPost, ...existingPosts];
   await storePosts(updatedPosts);
   res.status(201).json({ message: "Stored new post.", post: postData });
-});
-
-app.post("/signup", async (req, res) => {
-  console.log("Post signup");
-  const newUserData = req.body;
-
-  if (!validateSignupData(newUserData)) {
-    res.status(400).json({ message: "missing field", data: newUserData });
-    return;
-  }
-
-  if (!emailIsValid(newUserData.email)) {
-    res
-      .status(400)
-      .json({ message: "Invalid email", email: newUserData.email });
-    return;
-  }
-
-  let passValid = passwordIsValid(newUserData.password);
-  if (!passValid.status) {
-    res
-      .status(400)
-      .json({ message: "Password validation error: " + passValid.message });
-    return;
-  }
-
-  const users = await getUsers();
-
-  if (checkEmailRegistered(newUserData.email, users)) {
-    res
-      .status(400)
-      .json({ message: "Email already registered", email: newUserData.email });
-    return;
-  }
-
-  let idUsername = newUserData.username.toLowerCase().replace(" ", "-");
-  const newUserId = idUsername + users.length.toString();
-
-  const newUser = {
-    id: newUserId,
-    username: newUserData.username,
-    email: newUserData.email,
-    password: newUserData.password,
-  };
-
-  const updatedUsers = [newUser, ...users];
-  await storeUsers(updatedUsers);
-
-  const token = jwt.sign(
-    {
-      id: newUserId,
-      username: newUserData.username,
-      email: newUserData.email,
-    },
-    process.env.JWT_SECRET,
-    {
-      expiresIn: "1h",
-    }
-  );
-
-  res
-    .status(201)
-    .json({ message: "User registered succesfully.", token: token });
 });
 
 app.listen(process.env.PORT);

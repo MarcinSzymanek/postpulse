@@ -1,4 +1,15 @@
+@import url("https://fonts.googleapis.com/css2?family=Bitcount:wght@100..900&family=Jost:ital,wght@0,100..900;1,100..900&family=Jura:wght@300..700&display=swap");
 * {
+  /* variables */
+  /* colors */
+  --c-orange-main: #a25032;
+  --c-grad-black: #05061d;
+  --c-grad-blue: #222d62;
+  /* fonts */
+  --ff-jura: "Jura", sans-serif;
+  --ff-jost: "Jost", sans-serif;
+  --ff-bitcount: "Bitcount", system-ui;
+
   box-sizing: border-box;
 }
 
@@ -14,7 +25,11 @@
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
   /* background-image: radial-gradient(ellipse at top left, #7f50e4, #4c05d0); */
-  background: linear-gradient(to bottom, #0f0c29, #302b63);
+  background: linear-gradient(
+    to bottom,
+    var(--c-grad-black),
+    var(--c-grad-blue)
+  );
 }
 
 body {
