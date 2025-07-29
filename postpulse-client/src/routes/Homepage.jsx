@@ -1,4 +1,5 @@
 import classes from "./Homepage.module.css";
+import { SignupButon } from "../components/SignupButton";
 
 export function Homepage() {
   return (
@@ -11,7 +12,7 @@ export function Homepage() {
           <img src={"/ppex.png"}></img>
         </div>
         <div className={classes.buttons}>
-          <button text="Sign up">Sign up</button>
+          <SignupButon />
           <button text="Log in">Log in</button>
         </div>
       </div>

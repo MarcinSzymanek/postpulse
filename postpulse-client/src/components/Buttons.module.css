@@ -1,0 +1,12 @@
+.button {
+  background-color: var(--c-orange-main);
+  font-family: var(--ff-jost);
+  font-size: large;
+  width: 50%;
+  height: 3rem;
+  border-radius: 8px;
+  border-color: transparent;
+  justify-self: center;
+  color: white;
+  box-shadow: 3px 5px 5px black;
+}

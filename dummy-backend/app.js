@@ -31,7 +31,7 @@ app.use(bodyParser.urlencoded());
 
 app.use(
   cors({
-    origin: CLIENT_ORIGIN_URL,
+    origin: process.env.CLIENT_ORIGIN_URL,
     methods: ["GET", "POST", "UPDATE"],
     allowedHeaders: ["Authorization", "Content-Type"],
     maxAge: 86400,
@@ -44,7 +44,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get("/posts", async (req, res) => {
+app.get("/posts", validateAccessToken, async (req, res) => {
   const storedPosts = await getStoredPosts();
   console.log("Get posts");
   // await delay(3000);
@@ -58,7 +58,7 @@ app.get("/posts/:id", async (req, res) => {
   res.json({ post });
 });
 
-app.post("/posts", async (req, res) => {
+app.post("/posts", validateAccessToken, async (req, res) => {
   console.log("Post posts");
   const existingPosts = await getStoredPosts();
   const lastId = existingPosts.length.toString();
